@@ -217,7 +217,7 @@ export default {
     enabledCount: '{n} enabled fields',
     deleteFieldConfirm:
       'Remove this field from the form? Already collected answers stay in the database.',
-    reorderHint: 'Drag ⡿ or use the arrows to change the order.',
+    reorderHint: 'Drag ⠿ or use the arrows to change the order.',
     saved: 'Form saved.'
   },
 
