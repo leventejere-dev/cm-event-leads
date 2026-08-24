@@ -37,6 +37,8 @@ import {
   CATALOG_BY_KEY
 } from '../../config/fieldCatalog'
 import { FORM_TEMPLATES } from '../../config/templates'
+import { CONTENT_LANGS } from '../../config/fieldTranslations'
+import { localiseEvent, localiseFields } from '../../lib/localise'
 import { CONSENT_MODES } from '../../config/leadStatus'
 import { keyify } from '../../lib/format'
 
@@ -394,6 +396,40 @@ export default function FormBuilderPage() {
               />
             </div>
 
+            {CONTENT_LANGS.map((lng) => (
+              <div className="cm-field" key={lng}>
+                <label className="cm-label">
+                  {t('builder.gdprText')} · {t(`lang.${lng}`)}
+                </label>
+                <textarea
+                  className="cm-textarea"
+                  rows={5}
+                  value={event.i18n?.[lng]?.gdpr_text || ''}
+                  placeholder={event.gdpr_text || ''}
+                  onChange={(e) =>
+                    setEvent((p) => ({
+                      ...p,
+                      i18n: {
+                        ...(p.i18n || {}),
+                        [lng]: { ...((p.i18n || {})[lng] || {}), gdpr_text: e.target.value }
+                      }
+                    }))
+                  }
+                  onBlur={(e) => {
+                    const next = { ...(event.i18n || {}) }
+                    const entry = { ...(next[lng] || {}), gdpr_text: e.target.value.trim() }
+                    if (!entry.gdpr_text) delete entry.gdpr_text
+                    if (Object.keys(entry).length) next[lng] = entry
+                    else delete next[lng]
+                    saveConsent({ i18n: next })
+                  }}
+                />
+              </div>
+            ))}
+            <div className="cm-help" style={{ marginTop: -6, marginBottom: 14 }}>
+              {t('builder.gdprTextTranslationHelp')}
+            </div>
+
             <div className="cm-field">
               <label className="cm-label">{t('builder.gdprVersion')}</label>
               <input
@@ -522,6 +558,28 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
   const [busy, setBusy] = useState(false)
   const [keyTouched, setKeyTouched] = useState(!isNew)
 
+  /* ------------------------------------------------------------ languages */
+  // Romanian is what the plain columns hold. Hungarian and English are kept
+  // in config.i18n so the tablet can switch language without a second event.
+  const storedI18n = field?.config?.i18n || {}
+  const [trLang, setTrLang] = useState(CONTENT_LANGS[0])
+  const [trValues, setTrValues] = useState(() =>
+    CONTENT_LANGS.reduce((acc, lng) => {
+      acc[lng] = {
+        label: storedI18n[lng]?.label || '',
+        placeholder: storedI18n[lng]?.placeholder || '',
+        help_text: storedI18n[lng]?.help_text || '',
+        // one translated option per line, in the same order as above
+        options: (field?.options || [])
+          .map((o) => storedI18n[lng]?.options?.[o.value] || '')
+          .join('\n')
+      }
+      return acc
+    }, {})
+  )
+  const setTr = (lng, key, v) =>
+    setTrValues((p) => ({ ...p, [lng]: { ...p[lng], [key]: v } }))
+
   const set = (k, v) => setValues((p) => ({ ...p, [k]: v }))
   const needsOptions = TYPES_WITH_OPTIONS.includes(values.field_type)
 
@@ -545,18 +603,49 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
         label
       }))
 
+  // Empty boxes are dropped on purpose: a missing translation then falls back
+  // to the Romanian wording instead of showing a blank label on the tablet.
+  const buildI18n = () => {
+    const opts = needsOptions ? parseOptions() : []
+    const out = {}
+    CONTENT_LANGS.forEach((lng) => {
+      const src = trValues[lng] || {}
+      const entry = {}
+      ;['label', 'placeholder', 'help_text'].forEach((k) => {
+        const v = (src[k] || '').trim()
+        if (v) entry[k] = v
+      })
+      if (needsOptions) {
+        const lines = (src.options || '').split('\n')
+        const map = {}
+        opts.forEach((o, i) => {
+          const v = (lines[i] || '').trim()
+          if (v) map[o.value] = v
+        })
+        if (Object.keys(map).length) entry.options = map
+      }
+      if (Object.keys(entry).length) out[lng] = entry
+    })
+    return out
+  }
+
   const submit = async () => {
     if (!values.label.trim()) return
     setBusy(true)
     try {
+      const i18n = buildI18n()
       if (isNew) {
         await createField(eventId, {
           ...values,
           field_key: values.field_key || keyify(values.label),
           is_custom: true,
+          config: Object.keys(i18n).length ? { i18n } : {},
           options: needsOptions ? parseOptions() : []
         })
       } else {
+        const config = { ...(field.config || {}) }
+        if (Object.keys(i18n).length) config.i18n = i18n
+        else delete config.i18n
         await updateField(field.id, {
           label: values.label,
           placeholder: values.placeholder,
@@ -564,6 +653,7 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
           enabled: values.enabled,
           required: values.required,
           section: values.section,
+          config,
           ...(field.is_custom ? { field_type: values.field_type } : {})
         })
         // Only rewrite the option rows when the admin actually edited them.
@@ -695,6 +785,73 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
         </div>
       )}
 
+      <div className="cm-trans">
+        <div className="cm-trans-head">
+          <span className="cm-label" style={{ margin: 0 }}>
+            {t('builder.translations')}
+          </span>
+          <div className="cm-trans-tabs">
+            {CONTENT_LANGS.map((lng) => (
+              <button
+                key={lng}
+                type="button"
+                className={`cm-trans-tab${trLang === lng ? ' is-active' : ''}`}
+                onClick={() => setTrLang(lng)}
+              >
+                {t(`lang.${lng}`)}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="cm-help" style={{ marginBottom: 12 }}>
+          {t('builder.translationsHelp')}
+        </div>
+
+        <div className="cm-grid cm-grid-2">
+          <div className="cm-field">
+            <label className="cm-label">{t('builder.label')}</label>
+            <input
+              className="cm-input"
+              value={trValues[trLang].label}
+              placeholder={values.label}
+              onChange={(e) => setTr(trLang, 'label', e.target.value)}
+            />
+          </div>
+          <div className="cm-field">
+            <label className="cm-label">{t('builder.placeholder')}</label>
+            <input
+              className="cm-input"
+              value={trValues[trLang].placeholder}
+              placeholder={values.placeholder}
+              onChange={(e) => setTr(trLang, 'placeholder', e.target.value)}
+            />
+          </div>
+        </div>
+
+        <div className="cm-field">
+          <label className="cm-label">{t('builder.helpText')}</label>
+          <input
+            className="cm-input"
+            value={trValues[trLang].help_text}
+            placeholder={values.help_text}
+            onChange={(e) => setTr(trLang, 'help_text', e.target.value)}
+          />
+        </div>
+
+        {needsOptions && (
+          <div className="cm-field">
+            <label className="cm-label">{t('builder.options')}</label>
+            <textarea
+              className="cm-textarea"
+              rows={7}
+              value={trValues[trLang].options}
+              onChange={(e) => setTr(trLang, 'options', e.target.value)}
+            />
+            <div className="cm-help">{t('builder.optionsTranslationHelp')}</div>
+          </div>
+        )}
+      </div>
+
       <div className="cm-row" style={{ gap: 28, marginTop: 8 }}>
         <Switch
           checked={values.enabled}
@@ -716,8 +873,12 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
 /* ========================================================================== */
 
 function PreviewOverlay({ event, fields, onClose }) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const [resetKey, setResetKey] = useState(0)
+  // Preview exactly what a visitor sees in the language currently selected in
+  // the admin area — this is how translations get proof-read.
+  const viewEvent = localiseEvent(event, lang)
+  const viewFields = localiseFields(fields, lang)
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -751,9 +912,9 @@ function PreviewOverlay({ event, fields, onClose }) {
             {t('builder.previewNote')}
           </div>
           <RegistrationForm
-            key={resetKey}
-            event={event}
-            fields={fields}
+            key={`${lang}-${resetKey}`}
+            event={viewEvent}
+            fields={viewFields}
             preview
             resetKey={resetKey}
             onSubmit={async () => {
