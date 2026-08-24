@@ -219,7 +219,7 @@ export default {
     enabledCount: '{n} câmpuri active',
     deleteFieldConfirm:
       'Ștergeți acest câmp din formular? Răspunsurile deja colectate rămân în baza de date.',
-    reorderHint: 'Trageți de ⡿ sau folosiți săgețile pentru a schimba ordinea.',
+    reorderHint: 'Trageți de ⠿ sau folosiți săgețile pentru a schimba ordinea.',
     saved: 'Formularul a fost salvat.'
   },
 
