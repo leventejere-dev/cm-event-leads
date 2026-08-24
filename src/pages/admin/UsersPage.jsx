@@ -117,7 +117,7 @@ export default function UsersPage() {
                   <td>
                     <select
                       className="cm-select"
-                      style={{ maxWidth: 150, height: 34 }}
+                      style={{ minWidth: 160, maxWidth: 200, height: 34 }}
                       value={u.role}
                       disabled={u.is_self}
                       onChange={(e) => patch(u, { role: e.target.value })}
