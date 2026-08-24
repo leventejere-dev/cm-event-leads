@@ -270,7 +270,7 @@ export default function FormBuilderPage() {
                     }}
                   >
                     <span className="cm-builder-handle" title={t('common.moveUp')}>
-                      ⡿
+                      ⠿
                     </span>
 
                     <div className="cm-grow">
