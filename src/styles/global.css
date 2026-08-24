@@ -1035,8 +1035,11 @@ pre {
   flex-wrap: wrap;
 }
 .cm-kiosk-header img {
-  height: 42px;
+  /* Discreet: the event title below is what the visitor should read first. */
+  height: 26px;
   width: auto;
+  max-width: 230px;
+  object-fit: contain;
   display: block;
 }
 /* Event identity, centred in the kiosk header bar */
@@ -1643,7 +1646,8 @@ body.cm-no-scroll {
     padding: 14px var(--cm-space-md);
   }
   .cm-kiosk-header img {
-    height: 32px;
+    height: 20px;
+    max-width: 170px;
   }
   .cm-kiosk-event {
     flex: 1 1 100%;
