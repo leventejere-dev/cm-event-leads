@@ -218,7 +218,7 @@ export default {
     enabledCount: '{n} aktív mező',
     deleteFieldConfirm:
       'Törli ezt a mezőt az űrlapról? A már összegyűjtött válaszok megmaradnak.',
-    reorderHint: 'Húzza a ⡿ jelet, vagy használja a nyilakat a sorrendhez.',
+    reorderHint: 'Húzza a ⠿ jelet, vagy használja a nyilakat a sorrendhez.',
     saved: 'Az űrlap elmentve.'
   },
 
