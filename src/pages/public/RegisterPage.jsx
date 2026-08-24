@@ -276,7 +276,7 @@ function KioskHeader({ event }) {
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <header className="cm-kiosk-header">
-      <Logo variant="light" height={42} />
+      <Logo variant="light" height={26} />
 
       <div className="cm-row" style={{ gap: 20 }}>
         <LanguageSwitcher />
