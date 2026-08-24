@@ -1,5 +1,10 @@
 /* Romanian — primary language of the registration form. */
 export default {
+  lang: {
+    ro: 'Română',
+    hu: 'Maghiară',
+    en: 'Engleză'
+  },
   _name: 'Română',
   _code: 'ro',
 
@@ -181,6 +186,13 @@ export default {
   },
 
   builder: {
+    translations: 'Traduceri',
+    translationsHelp:
+      'Textul de mai sus este varianta românească. Aici completați cum apare aceeași întrebare pe tabletă când vizitatorul alege maghiara sau engleza. Ce lăsați gol rămâne în română.',
+    optionsTranslationHelp:
+      'Câte o traducere pe rând, exact în aceeași ordine ca lista de opțiuni de mai sus.',
+    gdprTextTranslationHelp:
+      'Dacă lăsați gol, vizitatorul vede textul în română, indiferent de limba aleasă.',
     title: 'Constructor de formular',
     subtitle: 'Decideți ce întrebări apar pe tabletă la acest eveniment',
     fields: 'Câmpuri',
@@ -252,7 +264,7 @@ export default {
   },
 
   kiosk: {
-    welcome: 'Înregistrare vizitatori',
+    welcome: 'Înregistrare',
     start: 'Începeți înregistrarea',
     noEvent: 'Niciun eveniment activ',
     noEventHelp:

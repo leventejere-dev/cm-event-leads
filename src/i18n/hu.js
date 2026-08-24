@@ -1,5 +1,10 @@
 /* Hungarian translation. */
 export default {
+  lang: {
+    ro: 'Román',
+    hu: 'Magyar',
+    en: 'Angol'
+  },
   _name: 'Magyar',
   _code: 'hu',
 
@@ -180,6 +185,13 @@ export default {
   },
 
   builder: {
+    translations: 'Fordítások',
+    translationsHelp:
+      'A fenti szöveg a román alapváltozat. Itt adja meg, hogyan jelenjen meg ugyanez a kérdés a tableten, ha a látogató magyart vagy angolt választ. Amit üresen hagy, románul marad.',
+    optionsTranslationHelp:
+      'Soronként egy fordítás, pontosan a fenti opciólista sorrendjében.',
+    gdprTextTranslationHelp:
+      'Ha üresen hagyja, a látogató a román szöveget látja, bármelyik nyelvet is választja.',
     title: 'Űrlapszerkesztő',
     subtitle: 'Döntse el, mely kérdések jelenjenek meg a táblagépen',
     fields: 'Mezők',
@@ -251,7 +263,7 @@ export default {
   },
 
   kiosk: {
-    welcome: 'Látogatói regisztráció',
+    welcome: 'Regisztráció',
     start: 'Regisztráció indítása',
     noEvent: 'Nincs aktív esemény',
     noEventHelp:

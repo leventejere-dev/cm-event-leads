@@ -1,5 +1,10 @@
 /* English translation. */
 export default {
+  lang: {
+    ro: 'Romanian',
+    hu: 'Hungarian',
+    en: 'English'
+  },
   _name: 'English',
   _code: 'en',
 
@@ -179,6 +184,13 @@ export default {
   },
 
   builder: {
+    translations: 'Translations',
+    translationsHelp:
+      'The text above is the Romanian original. Here you set how the same question appears on the tablet when the visitor picks Hungarian or English. Anything left empty stays Romanian.',
+    optionsTranslationHelp:
+      'One translation per line, in exactly the same order as the option list above.',
+    gdprTextTranslationHelp:
+      'If left empty the visitor sees the Romanian text whichever language they choose.',
     title: 'Form builder',
     subtitle: 'Decide which questions appear on the tablet for this event',
     fields: 'Fields',
@@ -250,7 +262,7 @@ export default {
   },
 
   kiosk: {
-    welcome: 'Visitor registration',
+    welcome: 'Registration',
     start: 'Start registration',
     noEvent: 'No active event',
     noEventHelp:
