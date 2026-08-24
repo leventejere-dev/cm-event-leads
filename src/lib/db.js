@@ -174,7 +174,8 @@ export async function seedEventFields(eventId) {
     enabled: f.enabled,
     required: f.required,
     sort_order: f.sort_order,
-    is_custom: false
+    is_custom: false,
+    config: f.config || {}
   }))
 
   const inserted = unwrap(await sb.from('form_fields').insert(rows).select('id, field_key'))
@@ -296,7 +297,8 @@ export async function createField(eventId, values) {
         enabled: values.enabled !== false,
         required: !!values.required,
         sort_order: values.sort_order ?? 9999,
-        is_custom: values.is_custom !== false
+        is_custom: values.is_custom !== false,
+        config: values.config || {}
       })
       .select()
       .single()
