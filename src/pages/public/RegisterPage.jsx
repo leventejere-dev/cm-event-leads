@@ -12,7 +12,7 @@
  *  It NEVER shows internal data: no lead list, no statuses, no notes.
  * ---------------------------------------------------------------------------
  */
-import React, { useEffect, useState, useCallback, useRef } from 'react'
+import React, { useEffect, useState, useCallback, useRef, useMemo } from 'react'
 import { useSearchParams, Link } from 'react-router-dom'
 import { useI18n } from '../../i18n'
 import { useBranding } from '../../hooks/useBranding'
@@ -29,6 +29,7 @@ import {
 import { submitRegistration } from '../../lib/submitRegistration'
 import { isConfigured } from '../../lib/supabase'
 import { formatDate } from '../../lib/format'
+import { localiseEvent, localiseFields } from '../../lib/localise'
 
 const CACHE_EVENT = 'cm_cached_event'
 const CACHE_FIELDS = 'cm_cached_fields'
@@ -50,7 +51,7 @@ function cacheGet(key) {
 }
 
 export default function RegisterPage() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { brand } = useBranding()
   const { online, pending } = useConnection()
   const [params] = useSearchParams()
@@ -71,6 +72,13 @@ export default function RegisterPage() {
       mounted.current = false
     }
   }, [])
+
+  /* ------------------------------------------------------------- language */
+  // The form is configured per event and stored in the database, so its
+  // wording cannot come from src/i18n. Translate it here, once per render,
+  // and let every child component stay language-agnostic.
+  const viewEvent = useMemo(() => localiseEvent(event, lang), [event, lang])
+  const viewFields = useMemo(() => localiseFields(fields, lang), [fields, lang])
 
   /* --------------------------------------------------------------- loading */
   const load = useCallback(async () => {
@@ -127,7 +135,7 @@ export default function RegisterPage() {
       signatureDataUrl,
       gdpr: {
         accepted: gdprAccepted,
-        text: event?.gdpr_text || '',
+        text: viewEvent?.gdpr_text || event?.gdpr_text || '',
         version: event?.gdpr_version || ''
       },
       source: slug ? 'qr' : 'kiosk'
@@ -181,7 +189,7 @@ export default function RegisterPage() {
   if (done) {
     return (
       <SuccessScreen
-        event={event}
+        event={viewEvent}
         leadNumber={done.leadNumber}
         offline={done.offline}
         onReset={handleReset}
@@ -215,7 +223,7 @@ export default function RegisterPage() {
 
   return (
     <div className="cm-kiosk">
-      <KioskHeader event={event} />
+      <KioskHeader event={viewEvent} />
 
       {!online && (
         <div className="cm-kiosk-status is-offline">
@@ -232,10 +240,12 @@ export default function RegisterPage() {
 
       <div className="cm-kiosk-body">
         <div className="cm-kiosk-title">
-          <h1>{event.name}</h1>
-          {[event.location, formatDate(event.start_date)].filter(Boolean).length > 0 && (
+          <h1>{viewEvent.name}</h1>
+          {[viewEvent.location, formatDate(viewEvent.start_date)].filter(Boolean).length > 0 && (
             <div className="cm-kiosk-title-meta">
-              {[event.location, formatDate(event.start_date)].filter(Boolean).join(' · ')}
+              {[viewEvent.location, formatDate(viewEvent.start_date)]
+                .filter(Boolean)
+                .join(' · ')}
             </div>
           )}
           <div className="cm-kiosk-title-sub">{t('kiosk.welcome')}</div>
@@ -249,8 +259,8 @@ export default function RegisterPage() {
         )}
         <RegistrationForm
           key={`${event.id}-${resetKey}`}
-          event={event}
-          fields={fields}
+          event={viewEvent}
+          fields={viewFields}
           resetKey={resetKey}
           onSubmit={handleSubmit}
           onCheckDuplicate={(email, phone) => checkDuplicate(event.id, email, phone)}
@@ -267,17 +277,6 @@ function KioskHeader({ event }) {
   return (
     <header className="cm-kiosk-header">
       <Logo variant="light" height={42} />
-
-      {event && (
-        <div className="cm-kiosk-event">
-          <div className="cm-kiosk-event-name">{event.name}</div>
-          <div className="cm-kiosk-event-meta">
-            {[event.location, formatDate(event.start_date)]
-              .filter(Boolean)
-              .join(' · ')}
-          </div>
-        </div>
-      )}
 
       <div className="cm-row" style={{ gap: 20 }}>
         <LanguageSwitcher />
