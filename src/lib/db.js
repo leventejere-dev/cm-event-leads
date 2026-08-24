@@ -485,6 +485,31 @@ export async function getSignatureUrl(path, expiresIn = 3600) {
   return data?.signedUrl || null
 }
 
+
+/** Signed URLs for many private signature images at once (export). */
+export async function getSignatureUrls(paths, expiresIn = 3600) {
+  const clean = (paths || []).filter(Boolean)
+  if (!clean.length) return {}
+  const sb = requireClient()
+  const out = {}
+  const chunk = 100
+  for (let i = 0; i < clean.length; i += chunk) {
+    const slice = clean.slice(i, i + chunk)
+    // eslint-disable-next-line no-await-in-loop
+    const { data, error } = await sb.storage
+      .from(SIGNATURE_BUCKET)
+      .createSignedUrls(slice, expiresIn)
+    if (error) {
+      console.warn('[CM] could not sign signature URLs', error)
+      continue
+    }
+    ;(data || []).forEach((row) => {
+      if (row && row.signedUrl && !row.error) out[row.path] = row.signedUrl
+    })
+  }
+  return out
+}
+
 /* =========================================================================
  *  ADMIN — SALES REPS
  * ====================================================================== */
@@ -549,6 +574,46 @@ export async function eventStats(eventId) {
  *  ADMIN — PROFILE
  * ====================================================================== */
 
+/* -------------------------------------------------------------------------
+ *  ADMIN USERS (who may open the admin area)
+ *  These go through SECURITY DEFINER functions because the browser is never
+ *  allowed to read auth.users directly — see supabase/07_admin_users.sql.
+ * ---------------------------------------------------------------------- */
+
+export async function listAdminUsers() {
+  const sb = requireClient()
+  const { data, error } = await sb.rpc('admin_list_users')
+  if (error) throw error
+  return data || []
+}
+
+export async function grantAdminByEmail(email, fullName, role = 'admin') {
+  const sb = requireClient()
+  const { data, error } = await sb.rpc('grant_admin_by_email', {
+    p_email: String(email || '').trim(),
+    p_name: String(fullName || '').trim() || null,
+    p_role: role || 'admin'
+  })
+  if (error) throw error
+  return data
+}
+
+export async function setAdminAccess(id, { is_active = null, role = null } = {}) {
+  const sb = requireClient()
+  const { error } = await sb.rpc('set_admin_access', {
+    p_id: id,
+    p_active: is_active,
+    p_role: role
+  })
+  if (error) throw error
+}
+
+export async function revokeAdmin(id) {
+  const sb = requireClient()
+  const { error } = await sb.rpc('revoke_admin', { p_id: id })
+  if (error) throw error
+}
+
 export async function getMyAdminProfile(userId) {
   const sb = requireClient()
   const { data, error } = await sb
@@ -588,6 +653,7 @@ export default {
   deleteLead,
   bulkUpdateLeads,
   getSignatureUrl,
+  getSignatureUrls,
   listReps,
   createRep,
   updateRep,
@@ -596,5 +662,9 @@ export default {
   updateSettings,
   dashboardStats,
   eventStats,
+  listAdminUsers,
+  grantAdminByEmail,
+  setAdminAccess,
+  revokeAdmin,
   getMyAdminProfile
 }
