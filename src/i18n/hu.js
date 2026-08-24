@@ -88,6 +88,7 @@ export default {
     events: 'Események',
     leads: 'Kontaktok',
     reps: 'Képviselők',
+    users: 'Felhasználók',
     settings: 'Beállítások',
     logout: 'Kijelentkezés',
     openKiosk: 'Regisztráció megnyitása'
@@ -333,6 +334,12 @@ export default {
     exportAll: 'Összes exportálása',
     exportEvent: 'Aktuális esemény exportálása',
     exportFiltered: 'Szűrt találatok exportálása',
+    exportStage: {
+      loading: 'Export előkészítése…',
+      signatures: 'Aláírások letöltése…',
+      building: 'Excel fájl összeállítása…',
+      writing: 'Fájl mentése…'
+    },
     exportXlsx: 'Excel (.xlsx)',
     exportCsv: 'CSV (UTF-8)',
     detailTitle: 'Kontakt részletei',
@@ -349,6 +356,41 @@ export default {
     unassigned: 'Nincs felelős'
   },
 
+  users: {
+    title: 'Felhasználók',
+    subtitle: 'Ki férhet hozzá az adminisztrációs felülethez',
+    add: 'Admin hozzáadása',
+    email: 'E-mail',
+    name: 'Név',
+    role: 'Szerepkör',
+    roleAdmin: 'Adminisztrátor',
+    roleViewer: 'Csak megtekintés',
+    roleHelp:
+      'Adminisztrátor: mindent módosíthat. Csak megtekintés: látja a kontaktokat és eseményeket, de nem módosíthatja őket.',
+    status: 'Státusz',
+    active: 'Aktív',
+    suspended: 'Felfüggesztve',
+    lastSignIn: 'Utolsó belépés',
+    never: 'Soha',
+    you: 'Ön',
+    suspend: 'Felfüggesztés',
+    reactivate: 'Visszaállítás',
+    remove: 'Hozzáférés visszavonása',
+    removeConfirm:
+      'Visszavonja {email} hozzáférését. A belépési fiók megmarad a Supabase-ben, de nem tud többé belépni az adminisztrációba. Folytatja?',
+    none: 'Még nincs egyetlen adminisztrátor sem.',
+    saved: 'A módosítások elmentve.',
+    selfNote:
+      'A saját fiókját ({email}) innen nem lehet módosítani — így senki nem tudja véletlenül kizárni magát.',
+    howToTitle: 'Hogyan adjon hozzá új kollégát',
+    howToBody:
+      '1. Supabase Dashboard → Authentication → Users → Add user → Create new user. Adja meg az e-mailt és egy jelszót, pipálja be az „Auto Confirm User” opciót.\n2. Jöjjön vissza ide → „Admin hozzáadása” → írja be ugyanazt az e-mailt.\n\nA jelszavak soha nem haladnak át ezen az alkalmazáson.',
+    addHelp:
+      'A belépési fióknak már léteznie kell a Supabase-ben (Authentication → Users). Itt csak az adminisztrációs hozzáférést adja meg neki.',
+    errNoAccount:
+      'Nincs ilyen e-mail címmel belépési fiók. Hozza létre előbb a Supabase-ben: Authentication → Users → Add user → Create new user („Auto Confirm User” bepipálva), utána jöjjön vissza ide.',
+    errSelf: 'A saját fiókját innen nem lehet módosítani.'
+  },
   reps: {
     title: 'Értékesítési képviselők',
     subtitle: 'Akikhez a kontaktok hozzárendelhetők',
