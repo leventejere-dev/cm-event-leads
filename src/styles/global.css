@@ -1721,3 +1721,47 @@ body.cm-no-scroll {
     transition-duration: 0.001ms !important;
   }
 }
+
+/* --------------------------------------------------------------------------
+ *  TRANSLATION PANEL (admin form builder)
+ *  A quiet, inset block so it reads as "the same question, other language"
+ *  rather than as a second set of unrelated inputs.
+ * ------------------------------------------------------------------------ */
+.cm-trans {
+  margin-top: var(--cm-space-lg);
+  padding: var(--cm-space-md) var(--cm-space-md) 2px;
+  border: 1px solid var(--cm-border);
+  border-left: 3px solid var(--cm-primary);
+  border-radius: var(--cm-radius);
+  background: var(--cm-surface-muted);
+}
+.cm-trans-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--cm-space-md);
+  margin-bottom: 4px;
+}
+.cm-trans-tabs {
+  display: inline-flex;
+  gap: 4px;
+}
+.cm-trans-tab {
+  border: 1px solid var(--cm-border);
+  background: transparent;
+  color: var(--cm-text-faint);
+  padding: 4px 14px;
+  border-radius: var(--cm-radius-sm);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.cm-trans-tab:hover {
+  color: var(--cm-text);
+}
+.cm-trans-tab.is-active {
+  background: var(--cm-dark);
+  border-color: var(--cm-dark);
+  color: #fff;
+}
