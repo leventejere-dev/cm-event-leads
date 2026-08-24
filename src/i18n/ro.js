@@ -90,6 +90,7 @@ export default {
     events: 'Evenimente',
     leads: 'Contacte',
     reps: 'Reprezentanți',
+    users: 'Utilizatori',
     settings: 'Setări',
     logout: 'Ieșire',
     openKiosk: 'Deschide înregistrarea'
@@ -334,6 +335,12 @@ export default {
     exportAll: 'Exportă tot',
     exportEvent: 'Exportă evenimentul curent',
     exportFiltered: 'Exportă rezultatele filtrate',
+    exportStage: {
+      loading: 'Se pregătește exportul…',
+      signatures: 'Se descarcă semnăturile…',
+      building: 'Se construiește fișierul Excel…',
+      writing: 'Se salvează fișierul…'
+    },
     exportXlsx: 'Excel (.xlsx)',
     exportCsv: 'CSV (UTF-8)',
     detailTitle: 'Detalii contact',
@@ -351,6 +358,41 @@ export default {
     unassigned: 'Nealocat'
   },
 
+  users: {
+    title: 'Utilizatori',
+    subtitle: 'Cine are acces la zona de administrare',
+    add: 'Adaugă administrator',
+    email: 'E-mail',
+    name: 'Nume',
+    role: 'Rol',
+    roleAdmin: 'Administrator',
+    roleViewer: 'Doar vizualizare',
+    roleHelp:
+      'Administrator: poate modifica tot. Doar vizualizare: poate citi contactele și evenimentele, dar nu le poate schimba.',
+    status: 'Status',
+    active: 'Activ',
+    suspended: 'Suspendat',
+    lastSignIn: 'Ultima autentificare',
+    never: 'Niciodată',
+    you: 'Dumneavoastră',
+    suspend: 'Suspendă',
+    reactivate: 'Reactivează',
+    remove: 'Retrage accesul',
+    removeConfirm:
+      'Se retrage accesul pentru {email}. Contul de autentificare rămâne în Supabase, dar nu va mai putea intra în administrare. Continuați?',
+    none: 'Nu există încă niciun administrator.',
+    saved: 'Modificările au fost salvate.',
+    selfNote:
+      'Propriul cont ({email}) nu poate fi modificat de aici — astfel nimeni nu se poate bloca singur în afara aplicației.',
+    howToTitle: 'Cum adăugați un coleg nou',
+    howToBody:
+      '1. Supabase Dashboard → Authentication → Users → Add user → Create new user. Completați e-mailul și o parolă, bifați „Auto Confirm User”.\n2. Reveniți aici → „Adaugă administrator” → introduceți același e-mail.\n\nParolele nu trec niciodată prin această aplicație.',
+    addHelp:
+      'Contul de autentificare trebuie să existe deja în Supabase (Authentication → Users). Aici îi acordați doar dreptul de acces la administrare.',
+    errNoAccount:
+      'Nu există niciun cont de autentificare cu acest e-mail. Creați-l întâi în Supabase: Authentication → Users → Add user → Create new user (bifați „Auto Confirm User”), apoi reveniți aici.',
+    errSelf: 'Propriul cont nu poate fi modificat de aici.'
+  },
   reps: {
     title: 'Reprezentanți de vânzări',
     subtitle: 'Persoanele cărora li se pot aloca contactele',
