@@ -231,6 +231,16 @@ export default function RegisterPage() {
       )}
 
       <div className="cm-kiosk-body">
+        <div className="cm-kiosk-title">
+          <h1>{event.name}</h1>
+          {[event.location, formatDate(event.start_date)].filter(Boolean).length > 0 && (
+            <div className="cm-kiosk-title-meta">
+              {[event.location, formatDate(event.start_date)].filter(Boolean).join(' · ')}
+            </div>
+          )}
+          <div className="cm-kiosk-title-sub">{t('kiosk.welcome')}</div>
+        </div>
+
         {submitError && (
           <div className="cm-alert cm-alert-danger" style={{ marginBottom: 24 }}>
             <div className="cm-alert-title">{t('common.error')}</div>
@@ -257,18 +267,20 @@ function KioskHeader({ event }) {
   return (
     <header className="cm-kiosk-header">
       <Logo variant="light" height={42} />
+
+      {event && (
+        <div className="cm-kiosk-event">
+          <div className="cm-kiosk-event-name">{event.name}</div>
+          <div className="cm-kiosk-event-meta">
+            {[event.location, formatDate(event.start_date)]
+              .filter(Boolean)
+              .join(' · ')}
+          </div>
+        </div>
+      )}
+
       <div className="cm-row" style={{ gap: 20 }}>
         <LanguageSwitcher />
-        {event && (
-          <div className="cm-kiosk-event">
-            <div className="cm-kiosk-event-name">{event.name}</div>
-            <div className="cm-kiosk-event-meta">
-              {[event.location, formatDate(event.start_date)]
-                .filter(Boolean)
-                .join(' · ')}
-            </div>
-          </div>
-        )}
 
         {/* discreet staff menu — three lines, opens a small dropdown */}
         <div className="cm-kiosk-menu-wrap">
