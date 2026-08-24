@@ -10,6 +10,7 @@ const NAV = [
   { to: '/admin/events', key: 'nav.events', icon: '▦' },
   { to: '/admin/leads', key: 'nav.leads', icon: '☰' },
   { to: '/admin/reps', key: 'nav.reps', icon: '◍' },
+  { to: '/admin/users', key: 'nav.users', icon: '◈' },
   { to: '/admin/settings', key: 'nav.settings', icon: '⚙' }
 ]
 
