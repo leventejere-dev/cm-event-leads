@@ -20,6 +20,8 @@
  */
 
 /** Field types supported by the renderer (src/components/form/FieldRenderer.jsx) */
+import { buildFieldI18n } from './fieldTranslations'
+
 export const FIELD_TYPES = {
   TEXT: 'text',
   TEXTAREA: 'textarea',
@@ -570,19 +572,26 @@ export const MAPPED_COLUMNS = FIELD_CATALOG.filter((f) => f.maps_to).reduce(
 
 /** Build the rows to insert into form_fields for a brand new event. */
 export function buildDefaultFields() {
-  return FIELD_CATALOG.map((f) => ({
-    field_key: f.field_key,
-    section: f.section,
-    field_type: f.field_type,
-    label: f.label,
-    placeholder: f.placeholder || '',
-    help_text: f.help_text || '',
-    enabled: !!f.enabled,
-    required: !!f.required,
-    sort_order: f.order,
-    is_custom: false,
-    options: f.options ? f.options.map((o) => ({ ...o })) : []
-  }))
+  return FIELD_CATALOG.map((f) => {
+    const options = f.options ? f.options.map((o) => ({ ...o })) : []
+    // Hungarian and English wording travels with the field, so a brand new
+    // event is trilingual from the first second — see fieldTranslations.js.
+    const i18n = buildFieldI18n(f.field_key, options)
+    return {
+      field_key: f.field_key,
+      section: f.section,
+      field_type: f.field_type,
+      label: f.label,
+      placeholder: f.placeholder || '',
+      help_text: f.help_text || '',
+      enabled: !!f.enabled,
+      required: !!f.required,
+      sort_order: f.order,
+      is_custom: false,
+      config: i18n ? { i18n } : {},
+      options
+    }
+  })
 }
 
 export default FIELD_CATALOG
