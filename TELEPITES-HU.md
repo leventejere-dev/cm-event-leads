@@ -147,7 +147,7 @@ git push
   * **ACTIV** kapcsoló: melyik kérdés jelenjen meg
   * **OBLIGATORIU** kapcsoló: kötelező-e — kérdésenként külön
   * **MODIFICĂ**: címke, placeholder, súgó, opciók, szekció
-  * **↑ ↓** vagy a **⡿** fogantyú húzása: sorrend
+  * **↑ ↓** vagy a **⠿** fogantyú húzása: sorrend
   * **+ Adaugă întrebare proprie**: teljesen új saját kérdés
   * **Aplică un șablon**: kész sablonból indulás
   * Jobb oldalon: **Semnătură** (kikapcsolva / opcionális / kötelező) és
