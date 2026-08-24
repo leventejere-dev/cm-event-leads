@@ -9,6 +9,7 @@ import {
   listEvents,
   listReps,
   getAnswersFor,
+  getSignatureUrls,
   bulkUpdateLeads
 } from '../../lib/db'
 import { LEAD_STATUSES, STATUS_BY_VALUE } from '../../config/leadStatus'
@@ -56,6 +57,7 @@ export default function LeadsPage() {
   const [reps, setReps] = useState([])
   const [selected, setSelected] = useState(new Set())
   const [exporting, setExporting] = useState(false)
+  const [stage, setStage] = useState(null)
 
   const eventsById = useMemo(
     () => events.reduce((a, e) => ({ ...a, [e.id]: e }), {}),
@@ -150,17 +152,36 @@ export default function LeadsPage() {
         return
       }
       const answers = await getAnswersFor(leads.map((l) => l.id))
-      const opts = { eventsById, repsById, t, fileLabel: label }
+
+      // Which event does this export belong to? Used for the title row.
+      const eventIds = [...new Set(leads.map((l) => l.event_id))]
+      const exportEvent =
+        eventIds.length === 1 ? eventsById[eventIds[0]] || null : null
+
+      const opts = {
+        eventsById,
+        repsById,
+        t,
+        fileLabel: label,
+        event: exportEvent,
+        // Lets the workbook embed the real signature images.
+        getSignedUrls: getSignatureUrls,
+        onProgress: (stage) => setStage(stage)
+      }
       const res =
         format === 'csv'
           ? exportToCsv(leads, answers, opts)
           : await exportToXlsx(leads, answers, opts)
-      toast.success(`${res.filename} · ${res.rows} ${t('common.rows')}`)
+      toast.success(
+        `${res.filename} · ${res.rows} ${t('common.rows')}` +
+          (res.signatures ? ` · ${res.signatures} ${t('leads.signature').toLowerCase()}` : '')
+      )
     } catch (err) {
       console.error(err)
       toast.error(err.message || t('errors.generic'))
     } finally {
       setExporting(false)
+      setStage(null)
     }
   }
 
@@ -236,6 +257,13 @@ export default function LeadsPage() {
           </button>
         </div>
       </div>
+
+      {exporting && (
+        <div className="cm-alert cm-alert-info" style={{ marginBottom: 14 }}>
+          <span className="cm-spinner" style={{ marginRight: 10, verticalAlign: 'middle' }} />
+          {t(`leads.exportStage.${stage || 'building'}`)}
+        </div>
+      )}
 
       {/* --------------------------------------------------------- filters */}
       <div className="cm-card" style={{ marginBottom: 18 }}>
