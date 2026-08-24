@@ -38,12 +38,12 @@ import {
 } from '../../config/fieldCatalog'
 import { FORM_TEMPLATES } from '../../config/templates'
 import { CONTENT_LANGS } from '../../config/fieldTranslations'
-import { localiseEvent, localiseFields } from '../../lib/localise'
+import { localiseEvent, localiseField, localiseFields } from '../../lib/localise'
 import { CONSENT_MODES } from '../../config/leadStatus'
 import { keyify } from '../../lib/format'
 
 export default function FormBuilderPage() {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { id } = useParams()
   const toast = useToast()
 
@@ -277,7 +277,7 @@ export default function FormBuilderPage() {
 
                     <div className="cm-grow">
                       <div className="cm-builder-label">
-                        {field.label}
+                        {localiseField(field, lang).label}
                         {field.required && <span className="cm-req">*</span>}
                         {field.is_custom && (
                           <>
@@ -291,6 +291,9 @@ export default function FormBuilderPage() {
                       <div className="cm-builder-key">
                         {field.field_key} · {t(`fieldType.${field.field_type}`)}
                         {field.options?.length ? ` · ${field.options.length} opt.` : ''}
+                        {localiseField(field, lang).label !== field.label
+                          ? ` · RO: ${field.label}`
+                          : ''}
                       </div>
                     </div>
 
@@ -779,7 +782,7 @@ function FieldModal({ field, eventId, onClose, onSaved }) {
             rows={7}
             value={optionsText}
             onChange={(e) => setOptionsText(e.target.value)}
-            placeholder={'Aluminiu\nCupru\nTitan-zinc\nOțel\nAltele'}
+            placeholder={t('builder.optionsPlaceholder')}
           />
           <div className="cm-help">{t('builder.optionsHelp')}</div>
         </div>

@@ -258,7 +258,7 @@ function AddAdminModal({ onClose, onDone }) {
           autoComplete="off"
           autoCapitalize="off"
           spellCheck="false"
-          placeholder="nume@color-metal.ro"
+          placeholder={t('users.emailPlaceholder')}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />

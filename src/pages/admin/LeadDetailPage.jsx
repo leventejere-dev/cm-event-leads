@@ -305,7 +305,7 @@ export default function LeadDetailPage() {
               onChange={(e) =>
                 setInternal((p) => ({ ...p, internal_notes: e.target.value }))
               }
-              placeholder="Ex. Arhitect cu proiect de fațadă din zinc, 2.500 m²."
+              placeholder={t('leads.internalNotesPlaceholder')}
             />
           </div>
 

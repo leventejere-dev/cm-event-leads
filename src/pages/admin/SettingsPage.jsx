@@ -277,7 +277,7 @@ export default function SettingsPage() {
                       <tr>
                         <th>{t('common.date')}</th>
                         <th>{t('leads.name')}</th>
-                        <th className="cm-right">try</th>
+                        <th className="cm-right">{t('settings.attempts')}</th>
                       </tr>
                     </thead>
                     <tbody>
