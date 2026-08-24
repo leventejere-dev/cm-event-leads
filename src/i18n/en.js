@@ -88,6 +88,7 @@ export default {
     events: 'Events',
     leads: 'Leads',
     reps: 'Sales reps',
+    users: 'Users',
     settings: 'Settings',
     logout: 'Log out',
     openKiosk: 'Open registration'
@@ -332,6 +333,12 @@ export default {
     exportAll: 'Export all',
     exportEvent: 'Export current event',
     exportFiltered: 'Export filtered results',
+    exportStage: {
+      loading: 'Preparing the export…',
+      signatures: 'Downloading signatures…',
+      building: 'Building the Excel file…',
+      writing: 'Saving the file…'
+    },
     exportXlsx: 'Excel (.xlsx)',
     exportCsv: 'CSV (UTF-8)',
     detailTitle: 'Lead detail',
@@ -348,6 +355,41 @@ export default {
     unassigned: 'Unassigned'
   },
 
+  users: {
+    title: 'Users',
+    subtitle: 'Who can open the admin area',
+    add: 'Add administrator',
+    email: 'E-mail',
+    name: 'Name',
+    role: 'Role',
+    roleAdmin: 'Administrator',
+    roleViewer: 'View only',
+    roleHelp:
+      'Administrator: can change everything. View only: can read leads and events but not modify them.',
+    status: 'Status',
+    active: 'Active',
+    suspended: 'Suspended',
+    lastSignIn: 'Last sign-in',
+    never: 'Never',
+    you: 'You',
+    suspend: 'Suspend',
+    reactivate: 'Reactivate',
+    remove: 'Revoke access',
+    removeConfirm:
+      'Access for {email} will be revoked. The login account stays in Supabase but can no longer enter the admin area. Continue?',
+    none: 'No administrators yet.',
+    saved: 'Changes saved.',
+    selfNote:
+      'Your own account ({email}) cannot be changed from here, so nobody can lock themselves out.',
+    howToTitle: 'How to add a colleague',
+    howToBody:
+      '1. Supabase Dashboard -> Authentication -> Users -> Add user -> Create new user. Enter the e-mail and a password, tick "Auto Confirm User".\n2. Come back here -> "Add administrator" -> enter the same e-mail.\n\nPasswords never pass through this application.',
+    addHelp:
+      'The login account must already exist in Supabase (Authentication -> Users). Here you only grant it access to the admin area.',
+    errNoAccount:
+      'There is no login account with this e-mail. Create it first in Supabase: Authentication -> Users -> Add user -> Create new user (tick "Auto Confirm User"), then come back here.',
+    errSelf: 'Your own account cannot be changed from here.'
+  },
   reps: {
     title: 'Sales representatives',
     subtitle: 'People that leads can be assigned to',
