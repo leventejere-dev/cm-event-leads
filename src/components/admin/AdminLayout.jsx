@@ -78,7 +78,7 @@ export default function AdminLayout() {
             type="button"
             className="cm-btn cm-btn-ghost cm-btn-icon cm-burger"
             onClick={() => setOpen((v) => !v)}
-            aria-label="Menu"
+            aria-label={t('common.menu')}
           >
             ☰
           </button>
