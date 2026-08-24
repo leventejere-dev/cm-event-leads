@@ -2,8 +2,9 @@
  * ---------------------------------------------------------------------------
  *  EXCEL (.xlsx) AND CSV EXPORT
  * ---------------------------------------------------------------------------
- *  * SheetJS (xlsx) builds the workbook entirely in the browser — no server,
- *    no paid service, no row limit.
+ *  * ExcelJS builds the workbook entirely in the browser — no server, no paid
+ *    service, no row limit — and it can EMBED THE SIGNATURE IMAGES, which the
+ *    accounting department needs to see next to each visitor.
  *  * CSV is written with a UTF-8 BOM so Microsoft Excel shows Romanian and
  *    Hungarian accented characters correctly (ă â î ș ț ő ű …).
  *  * Custom questions become columns AUTOMATICALLY: every distinct field_key
@@ -192,45 +193,201 @@ export function buildExportRows(leads, answers, opts = {}) {
 
 /* ---------------------------------------------------------------- exports */
 
+/* ------------------------------------------------------------- signatures */
+
+/**
+ * Collect the signature PNG of every lead as a base64 string.
+ * A signature lives either in the private "signatures" bucket (normal case)
+ * or, when the venue had no internet at upload time, as a base64 data URL
+ * inside the row itself. Both are handled here.
+ */
+async function collectSignatures(leads, getSignedUrls) {
+  const out = {}
+
+  // 1) the offline fallback copies are already base64 — nothing to fetch
+  const needFetch = []
+  leads.forEach((l) => {
+    if (l.signature_data && String(l.signature_data).includes('base64,')) {
+      out[l.id] = String(l.signature_data).split('base64,')[1]
+    } else if (l.signature_path) {
+      needFetch.push(l)
+    }
+  })
+
+  if (!needFetch.length || typeof getSignedUrls !== 'function') return out
+
+  // 2) one signed URL per stored image, then download them
+  let urls = {}
+  try {
+    urls = await getSignedUrls(needFetch.map((l) => l.signature_path))
+  } catch (err) {
+    console.warn('[CM] could not sign signature URLs for the export', err)
+    return out
+  }
+
+  const CONCURRENCY = 6
+  for (let i = 0; i < needFetch.length; i += CONCURRENCY) {
+    const slice = needFetch.slice(i, i + CONCURRENCY)
+    // eslint-disable-next-line no-await-in-loop
+    await Promise.all(
+      slice.map(async (l) => {
+        const url = urls[l.signature_path]
+        if (!url) return
+        try {
+          const buf = await fetch(url).then((r) => r.arrayBuffer())
+          const bytes = new Uint8Array(buf)
+          let bin = ''
+          for (let k = 0; k < bytes.length; k += 8192) {
+            bin += String.fromCharCode.apply(null, bytes.subarray(k, k + 8192))
+          }
+          out[l.id] = btoa(bin)
+        } catch (err) {
+          console.warn('[CM] signature download failed', l.lead_number, err)
+        }
+      })
+    )
+  }
+
+  return out
+}
+
+/**
+ * Build the .xlsx file.
+ *
+ * @param {Function} opts.getSignedUrls  paths[] -> { path: signedUrl } (optional)
+ * @param {Object}   opts.event          the event this export belongs to (optional)
+ * @param {Function} opts.onProgress     called with a short status string
+ */
 export async function exportToXlsx(leads, answers, opts = {}) {
-  // SheetJS is ~600 kB. It is loaded on demand, the FIRST time somebody
+  const { t = (k) => k, event = null, getSignedUrls = null, onProgress } = opts
+
+  // ExcelJS is ~800 kB. It is loaded on demand, the FIRST time somebody
   // exports — so the tablet registration screen stays small and fast.
-  const XLSX = await import('xlsx')
+  onProgress?.('loading')
+  const ExcelJS = (await import('exceljs')).default || (await import('exceljs'))
+
   const { rows, headers } = buildExportRows(leads, answers, opts)
   const filename = `${safeFileName(opts.fileLabel || 'cm_leads')}_${formatDate(
     new Date()
   )}.xlsx`
 
-  const ws = XLSX.utils.json_to_sheet(rows, { header: headers })
+  onProgress?.('signatures')
+  const signatures = await collectSignatures(leads, getSignedUrls)
 
-  // sensible column widths
-  ws['!cols'] = headers.map((h) => {
+  onProgress?.('building')
+  const wb = new ExcelJS.Workbook()
+  wb.creator = 'CM Event Leads'
+  wb.created = new Date()
+  const ws = wb.addWorksheet('Leads', {
+    views: [{ state: 'frozen', ySplit: 4 }]
+  })
+
+  const sigHeader = t('leads.signature')
+  // The signature column is written as a picture, so it must not also carry
+  // the Da/Nu text produced by buildExportRows.
+  const dataHeaders = headers.filter((h) => h !== sigHeader)
+  const allHeaders = [...dataHeaders, sigHeader]
+  const sigCol = allHeaders.length // 1-based index of the signature column
+
+  /* ------------------------------------------------------------- title ---- */
+  const titleText = event?.name || opts.fileLabel || 'CM Event Leads'
+  const subtitleParts = [
+    event?.location,
+    [formatDate(event?.start_date), formatDate(event?.end_date)]
+      .filter(Boolean)
+      .filter((v, i, a) => a.indexOf(v) === i)
+      .join(' – '),
+    `${t('common.export')}: ${formatDate(new Date(), { withTime: true })}`,
+    `${t('common.total')}: ${rows.length}`
+  ].filter(Boolean)
+
+  const titleRow = ws.addRow([titleText])
+  titleRow.font = { name: 'Montserrat', size: 16, bold: true, color: { argb: 'FF323232' } }
+  titleRow.height = 24
+  ws.mergeCells(1, 1, 1, allHeaders.length)
+
+  const subRow = ws.addRow([subtitleParts.join('   ·   ')])
+  subRow.font = { name: 'Montserrat', size: 10, color: { argb: 'FF6E6E73' } }
+  ws.mergeCells(2, 1, 2, allHeaders.length)
+
+  ws.addRow([]) // breathing room
+
+  /* ----------------------------------------------------------- headers ---- */
+  const headRow = ws.addRow(allHeaders)
+  headRow.height = 22
+  headRow.eachCell((cell) => {
+    cell.font = { name: 'Montserrat', size: 9, bold: true, color: { argb: 'FFFFFFFF' } }
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF323232' } }
+    cell.alignment = { vertical: 'middle', horizontal: 'left', wrapText: true }
+  })
+
+  /* -------------------------------------------------------------- data ---- */
+  rows.forEach((r, i) => {
+    const lead = leads[i]
+    const values = dataHeaders.map((h) => r[h])
+    const row = ws.addRow([...values, null])
+    row.alignment = { vertical: 'middle' }
+
+    const b64 = lead ? signatures[lead.id] : null
+    if (b64) {
+      row.height = 46
+      try {
+        const imageId = wb.addImage({ base64: b64, extension: 'png' })
+        ws.addImage(imageId, {
+          // ExcelJS anchors are 0-based
+          tl: { col: sigCol - 1 + 0.08, row: row.number - 1 + 0.08 },
+          ext: { width: 190, height: 52 },
+          editAs: 'oneCell'
+        })
+      } catch (err) {
+        console.warn('[CM] could not embed a signature', err)
+        row.getCell(sigCol).value = t('common.yes')
+      }
+    } else {
+      row.getCell(sigCol).value = t('leads.noSignature')
+      row.getCell(sigCol).font = { color: { argb: 'FF93959A' }, size: 9 }
+    }
+
+    if (i % 2 === 1) {
+      row.eachCell({ includeEmpty: true }, (cell) => {
+        cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFFAFAFA' } }
+      })
+    }
+  })
+
+  /* ------------------------------------------------------------ layout ---- */
+  allHeaders.forEach((h, idx) => {
+    const col = ws.getColumn(idx + 1)
+    if (idx + 1 === sigCol) {
+      col.width = 30
+      return
+    }
     let width = Math.max(12, Math.min(42, String(h).length + 4))
     rows.slice(0, 200).forEach((r) => {
       const v = r[h]
       if (v) width = Math.max(width, Math.min(50, String(v).length + 2))
     })
-    return { wch: width }
+    col.width = width
   })
-  ws['!autofilter'] = {
-    ref: XLSX.utils.encode_range({
-      s: { c: 0, r: 0 },
-      e: { c: Math.max(headers.length - 1, 0), r: Math.max(rows.length, 1) }
-    })
+
+  ws.autoFilter = {
+    from: { row: 4, column: 1 },
+    to: { row: 4, column: allHeaders.length }
   }
-  ws['!freeze'] = { xSplit: 0, ySplit: 1 }
 
-  const wb = XLSX.utils.book_new()
-  XLSX.utils.book_append_sheet(wb, ws, 'Leads')
-
-  const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' })
+  onProgress?.('writing')
+  const buffer = await wb.xlsx.writeBuffer()
   download(
-    new Blob([out], {
+    new Blob([buffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     }),
     filename
   )
-  return { rows: rows.length, filename }
+  return {
+    rows: rows.length,
+    filename,
+    signatures: Object.keys(signatures).length
+  }
 }
 
 /** Plain-JavaScript CSV writer with a UTF-8 BOM (Excel-friendly). */
