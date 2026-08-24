@@ -1,0 +1,66 @@
+# ---------------------------------------------------------------------------
+#  Automatic deployment to GitHub Pages
+# ---------------------------------------------------------------------------
+#  Every push to the "main" branch builds the app and publishes it.
+#
+#  ONE-TIME SETUP IN GITHUB (see README step 13):
+#    Settings -> Pages -> Build and deployment -> Source: "GitHub Actions"
+#    Settings -> Secrets and variables -> Actions -> "Variables" tab ->
+#        New repository variable:
+#           VITE_SUPABASE_URL       = https://xxxx.supabase.co
+#           VITE_SUPABASE_ANON_KEY  = eyJhbGciOi...
+#    (The anon key is a PUBLIC key — it is meant to be visible in the browser.
+#     NEVER add the service_role key here.)
+# ---------------------------------------------------------------------------
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+
+      - name: Build
+        env:
+          # https://<user>.github.io/<repo>/  -> base path must be "/<repo>/"
+          VITE_BASE_PATH: /${{ github.event.repository.name }}/
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ vars.VITE_SUPABASE_ANON_KEY }}
+        run: npm run build
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
