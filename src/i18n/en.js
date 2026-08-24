@@ -9,6 +9,7 @@ export default {
   _code: 'en',
 
   common: {
+    menu: 'Menu',
     save: 'Save',
     saveChanges: 'Save changes',
     cancel: 'Cancel',
@@ -89,6 +90,7 @@ export default {
   },
 
   nav: {
+    admin: 'Administration',
     dashboard: 'Dashboard',
     events: 'Events',
     leads: 'Leads',
@@ -184,6 +186,7 @@ export default {
   },
 
   builder: {
+    optionsPlaceholder: 'Aluminium\nCopper\nTitanium zinc\nSteel\nOther',
     translations: 'Translations',
     translationsHelp:
       'The text above is the Romanian original. Here you set how the same question appears on the tablet when the visitor picks Hungarian or English. Anything left empty stays Romanian.',
@@ -297,6 +300,8 @@ export default {
   },
 
   leads: {
+    internalNotesPlaceholder:
+      'e.g. Architect with a zinc facade project, 2,500 m².',
     title: 'Leads',
     subtitle: 'All registrations collected at events',
     leadId: 'Lead ID',
@@ -368,6 +373,7 @@ export default {
   },
 
   users: {
+    emailPlaceholder: 'name@color-metal.ro',
     title: 'Users',
     subtitle: 'Who can open the admin area',
     add: 'Add administrator',
@@ -415,6 +421,7 @@ export default {
   },
 
   settings: {
+    attempts: 'Attempts',
     title: 'Settings',
     subtitle: 'General application configuration',
     branding: 'Branding',

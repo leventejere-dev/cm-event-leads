@@ -9,6 +9,7 @@ export default {
   _code: 'ro',
 
   common: {
+    menu: 'Meniu',
     save: 'Salvează',
     saveChanges: 'Salvează modificările',
     cancel: 'Anulează',
@@ -91,6 +92,7 @@ export default {
   },
 
   nav: {
+    admin: 'Administrare',
     dashboard: 'Panou',
     events: 'Evenimente',
     leads: 'Contacte',
@@ -186,6 +188,7 @@ export default {
   },
 
   builder: {
+    optionsPlaceholder: 'Aluminiu\nCupru\nTitan-zinc\nOțel\nAltele',
     translations: 'Traduceri',
     translationsHelp:
       'Textul de mai sus este varianta românească. Aici completați cum apare aceeași întrebare pe tabletă când vizitatorul alege maghiara sau engleza. Ce lăsați gol rămâne în română.',
@@ -299,6 +302,8 @@ export default {
   },
 
   leads: {
+    internalNotesPlaceholder:
+      'Ex. Arhitect cu proiect de fațadă din zinc, 2.500 m².',
     title: 'Contacte',
     subtitle: 'Toate înregistrările colectate la evenimente',
     leadId: 'ID contact',
@@ -371,6 +376,7 @@ export default {
   },
 
   users: {
+    emailPlaceholder: 'nume@color-metal.ro',
     title: 'Utilizatori',
     subtitle: 'Cine are acces la zona de administrare',
     add: 'Adaugă administrator',
@@ -417,6 +423,7 @@ export default {
   },
 
   settings: {
+    attempts: 'Încercări',
     title: 'Setări',
     subtitle: 'Configurări generale ale aplicației',
     branding: 'Identitate vizuală',

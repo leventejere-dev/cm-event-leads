@@ -9,6 +9,7 @@ export default {
   _code: 'hu',
 
   common: {
+    menu: 'Menü',
     save: 'Mentés',
     saveChanges: 'Módosítások mentése',
     cancel: 'Mégse',
@@ -89,6 +90,7 @@ export default {
   },
 
   nav: {
+    admin: 'Adminisztráció',
     dashboard: 'Áttekintés',
     events: 'Események',
     leads: 'Kontaktok',
@@ -185,6 +187,7 @@ export default {
   },
 
   builder: {
+    optionsPlaceholder: 'Alumínium\nRéz\nTitáncink\nAcél\nEgyéb',
     translations: 'Fordítások',
     translationsHelp:
       'A fenti szöveg a román alapváltozat. Itt adja meg, hogyan jelenjen meg ugyanez a kérdés a tableten, ha a látogató magyart vagy angolt választ. Amit üresen hagy, románul marad.',
@@ -298,6 +301,8 @@ export default {
   },
 
   leads: {
+    internalNotesPlaceholder:
+      'Pl. Építész, cink homlokzati projekt, 2.500 m².',
     title: 'Kontaktok',
     subtitle: 'Az eseményeken gyűjtött összes regisztráció',
     leadId: 'Kontakt azonosító',
@@ -369,6 +374,7 @@ export default {
   },
 
   users: {
+    emailPlaceholder: 'nev@color-metal.ro',
     title: 'Felhasználók',
     subtitle: 'Ki férhet hozzá az adminisztrációs felülethez',
     add: 'Admin hozzáadása',
@@ -416,6 +422,7 @@ export default {
   },
 
   settings: {
+    attempts: 'Próbálkozás',
     title: 'Beállítások',
     subtitle: 'Általános alkalmazásbeállítások',
     branding: 'Arculat',
