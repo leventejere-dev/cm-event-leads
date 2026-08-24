@@ -273,6 +273,7 @@ export default function RegisterPage() {
 /* -------------------------------------------------------------- sub-views */
 
 function KioskHeader({ event }) {
+  const { t } = useI18n()
   const [menuOpen, setMenuOpen] = useState(false)
   return (
     <header className="cm-kiosk-header">
@@ -286,7 +287,7 @@ function KioskHeader({ event }) {
           <button
             type="button"
             className="cm-kiosk-burger"
-            aria-label="Meniu"
+            aria-label={t('common.menu')}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((v) => !v)}
           >
@@ -302,14 +303,14 @@ function KioskHeader({ event }) {
               />
               <div className="cm-kiosk-menu" role="menu">
                 <Link to="/admin" role="menuitem" onClick={() => setMenuOpen(false)}>
-                  Admin
+                  {t('nav.admin')}
                 </Link>
                 <button
                   type="button"
                   role="menuitem"
                   onClick={() => window.location.reload()}
                 >
-                  ↻ Reîncarcă
+                  ↻ {t('common.refresh')}
                 </button>
               </div>
             </>
