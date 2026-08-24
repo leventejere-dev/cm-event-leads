@@ -9,8 +9,10 @@
  */
 import React from 'react'
 import { FIELD_TYPES } from '../../config/fieldCatalog'
+import { useI18n } from '../../i18n'
 
 export default function FieldRenderer({ field, value, onChange, error, idPrefix = 'f' }) {
+  const { t } = useI18n()
   const id = `${idPrefix}-${field.field_key}`
   const invalid = Boolean(error)
   const common = {
@@ -163,7 +165,7 @@ export default function FieldRenderer({ field, value, onChange, error, idPrefix 
             aria-pressed={yesSelected}
             onClick={() => onChange(yesSelected ? null : true)}
           >
-            {field.config?.yesLabel || 'Da'}
+            {field.config?.yesLabel || t('common.yes')}
           </button>
           <button
             type="button"
@@ -172,7 +174,7 @@ export default function FieldRenderer({ field, value, onChange, error, idPrefix 
             aria-pressed={noSelected}
             onClick={() => onChange(noSelected ? null : false)}
           >
-            {field.config?.noLabel || 'Nu'}
+            {field.config?.noLabel || t('common.no')}
           </button>
         </div>,
         true
