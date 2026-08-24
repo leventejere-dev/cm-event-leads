@@ -46,6 +46,7 @@ export function EmptyState({ children }) {
 /* ------------------------------------------------------------------ modal */
 
 export function Modal({ title, children, footer, onClose, size = '' }) {
+  const { t } = useI18n()
   useEffect(() => {
     const onKey = (e) => {
       if (e.key === 'Escape') onClose?.()
@@ -74,7 +75,7 @@ export function Modal({ title, children, footer, onClose, size = '' }) {
             type="button"
             className="cm-btn cm-btn-ghost cm-btn-icon"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t('common.close')}
           >
             ✕
           </button>
