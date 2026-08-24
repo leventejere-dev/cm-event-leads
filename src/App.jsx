@@ -42,6 +42,7 @@ import FormBuilderPage from './pages/admin/FormBuilderPage'
 import LeadsPage from './pages/admin/LeadsPage'
 import LeadDetailPage from './pages/admin/LeadDetailPage'
 import RepsPage from './pages/admin/RepsPage'
+import UsersPage from './pages/admin/UsersPage'
 import SettingsPage from './pages/admin/SettingsPage'
 
 function RequireAdmin({ children }) {
@@ -79,6 +80,7 @@ export default function App() {
                   <Route path="leads" element={<LeadsPage />} />
                   <Route path="leads/:id" element={<LeadDetailPage />} />
                   <Route path="reps" element={<RepsPage />} />
+                  <Route path="users" element={<UsersPage />} />
                   <Route path="settings" element={<SettingsPage />} />
                 </Route>
 
